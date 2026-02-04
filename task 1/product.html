@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Cart Card UI</title>
+<style>
+  body { font-family: Arial; padding: 20px; }
+  .controls { margin-bottom: 15px; }
+  .grid { display: flex; gap: 15px; flex-wrap: wrap; }
+  .card { border: 1px solid #ccc; padding: 10px; width: 180px; text-align: center; }
+  img { width: 100px; height: 100px; object-fit: cover; }
+  .add { display: inline-block; margin-top: 8px; padding: 5px 10px; background: #28a745; color: white; cursor: pointer; border-radius: 4px; user-select: none; }
+  .add:hover { background: #218838; }
+</style>
+</head>
+<body>
+
+<h2>Product Cart</h2>
+
+<div class="controls">
+  Max Price: $<span id="priceValue">200</span><br>
+  <input type="range" id="priceFilter" min="0" max="200" value="200">
+</div>
+
+<div id="productGrid" class="grid"></div>
+
+<h3>
+  Items: <span id="cartCount">0</span><br>
+  Total: $<span id="cartTotal">0</span>
+</h3>
+
+<script>
+  const products = [
+    { id: 1, name: "Speaker", price: 90, stock: 6, image: "https://www.fingers.co.in/secure/api/uploads/products/1714207616_2.png" },
+    { id: 2, name: "Webcam", price: 110, stock: 4, image: "https://www.osoro.in/wp-content/uploads/2021/04/web-camera-online.jpg" },
+    { id: 3, name: "Microphone", price: 70, stock: 10, image: "https://www.digitek.net.in/cdn/shop/files/DWM008PRO-3.jpg?v=1750071218&width=2048" },
+    { id: 4, name: "Tripod", price: 40, stock: 12, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcToCxBLwjtPRDiGsPp1EmokzxFj15IJsE9F_A&s" }
+  ];
+
+  let cart = [];
+
+  const grid = document.getElementById("productGrid");
+  const cartCount = document.getElementById("cartCount");
+  const cartTotal = document.getElementById("cartTotal");
+  const slider = document.getElementById("priceFilter");
+  const priceValue = document.getElementById("priceValue");
+
+  function render(list) {
+    grid.innerHTML = "";
+    list.forEach(p => {
+      const card = document.createElement("div");
+      card.className = "card";
+
+      const img = document.createElement("img");
+      img.src = p.image;
+
+      const name = document.createElement("h3");
+      name.textContent = p.name;
+
+      const price = document.createElement("p");
+      price.textContent = "$" + p.price;
+
+      const addDiv = document.createElement("div");
+      addDiv.className = "add";
+      addDiv.textContent = "Add to Cart";
+      addDiv.onclick = () => add(p);
+
+      card.appendChild(img);
+      card.appendChild(name);
+      card.appendChild(price);
+      card.appendChild(addDiv);
+
+      grid.appendChild(card);
+    });
+  }
+
+  function add(p) {
+    cart.push(p);
+    update();
+  }
+
+  function update() {
+    cartCount.textContent = cart.length;
+    cartTotal.textContent = cart.reduce((sum, item) => sum + item.price, 0).toFixed(2);
+  }
+
+  slider.oninput = () => {
+    const value = Number(slider.value);
+    priceValue.textContent = value;
+    render(products.filter(p => p.price <= value));
+  };
+
+  render(products);
+  update();
+</script>
+
+</body>
+</html>
